@@ -146,24 +146,36 @@
 
 ## 📝 Phase 4: Posts Management System
 
-### 4.1 Posts API Development
-- [ ] Create posts CRUD API endpoints
-  - [ ] GET /api/posts (list with pagination, search, filtering)
-  - [ ] GET /api/posts/[id] (single post)
-  - [ ] POST /api/posts (create new post)
-  - [ ] PUT /api/posts/[id] (update post)
-  - [ ] DELETE /api/posts/[id] (soft delete)
-  - [ ] POST /api/posts/bulk (bulk actions)
-- [ ] Implement post search and filtering (by title, content, category, status, author)
-- [ ] Create post category management API
-- [ ] Implement tag management API
-- [ ] Set up post status management (draft, published)
-- [ ] Create post validation schemas with Zod
-- [ ] Implement post SEO metadata handling
-- [ ] Add post activity logging
+### 4.1 Core Architecture Setup
+- [ ] Set up tRPC server configuration with Prisma integration
+- [ ] Create shared Zod schemas for posts validation
+- [ ] Configure superjson for tRPC data serialization
+- [ ] Set up Socket.io server with Zod validation
+- [ ] Create Socket.io event schemas with Zod
+- [ ] Implement Socket.io trigger system for real-time notifications
+- [ ] Set up tRPC client configuration with React Query
+- [ ] Create Socket.io client connection management
+- [ ] Test tRPC + Socket.io integration
 - [ ] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 
-### 4.2 Posts UI Components
+### 4.2 Posts API Development with tRPC
+- [ ] Create posts tRPC router with CRUD procedures
+  - [ ] posts.getAll (list with pagination, search, filtering)
+  - [ ] posts.getById (single post)
+  - [ ] posts.create (create new post)
+  - [ ] posts.update (update post)
+  - [ ] posts.delete (soft delete)
+  - [ ] posts.bulk (bulk actions)
+- [ ] Implement post search and filtering with tRPC
+- [ ] Create post category management tRPC procedures
+- [ ] Implement tag management tRPC procedures
+- [ ] Set up post status management with tRPC
+- [ ] Create post validation schemas with Zod (shared)
+- [ ] Implement post SEO metadata handling with tRPC
+- [ ] Add post activity logging with tRPC
+- [ ] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
+
+### 4.3 Posts UI Components
 - [ ] Create posts list page with filtering and search (/src/app/admin/posts/page.tsx)
 - [ ] Implement post creation form with shadcn/ui components
 - [ ] Set up CKEditor 5 integration for rich text editing
@@ -180,7 +192,18 @@
 - [ ] Implement post publishing workflow
 - [ ] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 
-### 4.3 Posts Features
+### 4.4 Posts Features with Real-time Updates
+- [ ] Implement draft/published status toggle with Socket.io triggers
+- [ ] Create post duplication feature with real-time notifications
+- [ ] Implement bulk actions with Socket.io progress updates
+- [ ] Create post revision history system with real-time sync
+- [ ] Implement advanced post search functionality
+- [ ] Set up post export features (JSON, CSV)
+- [ ] Create post scheduling system (if needed)
+- [ ] Implement post template system
+- [ ] Set up post analytics (views, engagement)
+- [ ] Add real-time collaboration indicators (who is editing)
+- [ ] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 - [ ] Implement draft/published status toggle
 - [ ] Create post duplication feature
 - [ ] Implement bulk actions (delete, publish, unpublish, change category)
@@ -298,38 +321,42 @@
 
 ## 🎫 Phase 7: Reporting System
 
-### 7.1 Reports API Development
-- [ ] Create reports CRUD API endpoints
-  - [ ] GET /api/reports (list with pagination, search, filtering)
-  - [ ] GET /api/reports/[id] (single report)
-  - [ ] POST /api/reports (create new report)
-  - [ ] PUT /api/reports/[id] (update report)
-  - [ ] DELETE /api/reports/[id] (soft delete)
-- [ ] Implement status management API
-- [ ] Set up report attachment handling
-- [ ] Create report response system API
-- [ ] Implement location data handling (lat, lng, address)
-- [ ] Set up report search and filtering
-- [ ] Create report export functionality (PDF, Excel)
-- [ ] Add report activity logging
+### 7.1 Reports API Development with tRPC & Socket.io
+- [ ] Create reports tRPC router with CRUD procedures
+  - [ ] reports.getAll (list with pagination, search, filtering)
+  - [ ] reports.getById (single report)
+  - [ ] reports.create (create new report)
+  - [ ] reports.update (update report)
+  - [ ] reports.delete (soft delete)
+- [ ] Implement status management with tRPC
+- [ ] Set up report attachment handling with tRPC
+- [ ] Create report response system with tRPC
+- [ ] Implement location data handling (lat, lng, address) with tRPC
+- [ ] Set up report search and filtering with tRPC
+- [ ] Create report export functionality (PDF, Excel) with tRPC
+- [ ] Add report activity logging with tRPC
+- [ ] Implement Socket.io triggers for report status updates
+- [ ] Set up real-time report notifications via Socket.io
 - [ ] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 
-### 7.2 Dynamic Status System
-- [ ] Create status management API
-  - [ ] GET /api/statuses (list all statuses)
-  - [ ] POST /api/statuses (create new status)
-  - [ ] PUT /api/statuses/[id] (update status)
-  - [ ] DELETE /api/statuses/[id] (delete status)
-- [ ] Implement dynamic status creation/deletion
-- [ ] Set up status ordering system
-- [ ] Create status color customization
-- [ ] Implement status workflow rules
-- [ ] Set up status transition validation
-- [ ] Create status analytics
+### 7.2 Dynamic Status System with tRPC & Socket.io
+- [ ] Create status management tRPC router
+  - [ ] statuses.getAll (list all statuses)
+  - [ ] statuses.create (create new status)
+  - [ ] statuses.update (update status)
+  - [ ] statuses.delete (delete status)
+- [ ] Implement dynamic status creation/deletion with tRPC
+- [ ] Set up status ordering system with tRPC
+- [ ] Create status color customization with tRPC
+- [ ] Implement status workflow rules with tRPC
+- [ ] Set up status transition validation with tRPC
+- [ ] Create status analytics with tRPC
 - [ ] Add default statuses seed data (Baru, Diproses, Ditunda, Selesai)
+- [ ] Implement Socket.io triggers for status changes
+- [ ] Set up real-time status update notifications
 - [ ] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 
-### 7.3 Reports UI Components
+### 7.3 Reports UI Components with Real-time Updates
 - [ ] Create reports list with status filtering (/src/app/admin/reports/page.tsx)
 - [ ] Implement report creation form
   - [ ] Title input field
@@ -349,16 +376,17 @@
 - [ ] Set up report status management UI
 - [ ] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 
-### 7.4 Reports Features
-- [ ] Implement report assignment system
-- [ ] Create report notification system
-- [ ] Set up report analytics dashboard
-- [ ] Implement report export (PDF/Excel)
-- [ ] Create report search functionality
-- [ ] Implement report filtering options
-- [ ] Set up report archiving system
-- [ ] Create report workflow automation
-- [ ] Implement report SLA tracking
+### 7.4 Reports Features with Real-time Updates
+- [ ] Implement report assignment system with Socket.io notifications
+- [ ] Create report notification system with real-time triggers
+- [ ] Set up report analytics dashboard with live updates
+- [ ] Implement report export (PDF/Excel) with progress notifications
+- [ ] Create report search functionality with real-time results
+- [ ] Implement report filtering options with instant updates
+- [ ] Set up report archiving system with status notifications
+- [ ] Create report workflow automation with real-time tracking
+- [ ] Implement report SLA tracking with deadline notifications
+- [ ] Add real-time collaboration features for report handling
 - [ ] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 
 ## 🏷️ Phase 8: Categories & Tags Management
@@ -473,30 +501,38 @@
   - [ ] Backup encryption settings
 - [ ] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 
-## 🔔 Phase 11: Notification System
+## 🔔 Phase 11: Notification System with Socket.io Integration
 
-### 11.1 Notification API Development
-- [ ] Create notification API endpoints
-  - [ ] GET /api/notifications (list with pagination, read/unread filter)
-  - [ ] GET /api/notifications/[id] (single notification)
-  - [ ] PUT /api/notifications/[id]/read (mark as read)
-  - [ ] PUT /api/notifications/read-all (mark all as read)
-  - [ ] DELETE /api/notifications/[id] (delete notification)
-- [ ] Implement notification creation system
-- [ ] Set up notification preferences
-- [ ] Create notification templates
-- [ ] Add notification delivery tracking
+### 11.1 Notification System Architecture
+- [ ] Create notification tRPC router with CRUD procedures
+  - [ ] notifications.getAll (list with pagination, read/unread filter)
+  - [ ] notifications.getById (single notification)
+  - [ ] notifications.markAsRead (mark as read)
+  - [ ] notifications.markAllAsRead (mark all as read)
+  - [ ] notifications.delete (delete notification)
+- [ ] Implement Socket.io event system for real-time notifications
+  - [ ] notification.created (new notification trigger)
+  - [ ] notification.read (mark as read trigger)
+  - [ ] notification.deleted (delete notification trigger)
+- [ ] Set up notification creation system with Socket.io triggers
+- [ ] Create notification preferences management with tRPC
+- [ ] Implement notification templates with tRPC
+- [ ] Add notification delivery tracking with Socket.io
+- [ ] Set up notification room management for targeted notifications
+- [ ] Create notification queue system for bulk notifications
 - [ ] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 
-### 11.2 Notification UI Components
-- [ ] Create notification center component
-- [ ] Implement notification badge with unread count
-- [ ] Set up notification list with filtering
-- [ ] Create notification detail view
-- [ ] Implement notification actions
-- [ ] Set up notification preferences UI
-- [ ] Create notification templates editor
-- [ ] Implement notification history
+### 11.2 Notification UI Components with Real-time Updates
+- [ ] Create notification center component with Socket.io integration
+- [ ] Implement notification badge with real-time unread count updates
+- [ ] Set up notification list with real-time filtering
+- [ ] Create notification detail view with instant updates
+- [ ] Implement notification actions with real-time feedback
+- [ ] Set up notification preferences UI with instant save
+- [ ] Create notification templates editor with live preview
+- [ ] Implement notification history with real-time updates
+- [ ] Add notification sound and visual alerts
+- [ ] Create notification settings for different event types
 - [ ] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 
 ## 📊 Phase 12: Analytics & Reporting
