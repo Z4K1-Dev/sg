@@ -1,12 +1,46 @@
 import { z } from 'zod';
-import { publicProcedure, router } from '../server';
+import { protectedProcedure, router } from '../server';
+
+// Helper function to log activity
+async function logActivity(
+  ctx: any,
+  type: 'CREATE' | 'UPDATE' | 'DELETE',
+  action: string,
+  description: string,
+  entityId?: string,
+  entityType?: string,
+  oldData?: any,
+  newData?: any
+) {
+  try {
+    await ctx.db.activityLog.create({
+      data: {
+        type,
+        action,
+        description,
+        userId: ctx.session.user.id,
+        entityId,
+        entityType,
+        metadata: JSON.stringify({
+          oldData,
+          newData,
+          timestamp: new Date().toISOString(),
+        }),
+        ipAddress: ctx.req?.headers?.['x-forwarded-for'] || ctx.req?.socket?.remoteAddress,
+        userAgent: ctx.req?.headers['user-agent'],
+      },
+    });
+  } catch (error) {
+    console.error('Failed to log activity:', error);
+  }
+}
 
 /**
  * Statuses router with CRUD operations
  */
 export const statusesRouter = router({
   // Get all statuses
-  getAll: publicProcedure
+  getAll: protectedProcedure
     .query(async ({ ctx }) => {
       const statuses = await ctx.db.status.findMany({
         orderBy: {
@@ -18,7 +52,7 @@ export const statusesRouter = router({
     }),
 
   // Get single status by ID
-  getById: publicProcedure
+  getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const status = await ctx.db.status.findFirst({
@@ -35,7 +69,7 @@ export const statusesRouter = router({
     }),
 
   // Create new status
-  create: publicProcedure
+  create: protectedProcedure
     .input(z.object({
       name: z.string().min(1),
       description: z.string().optional(),
@@ -70,11 +104,23 @@ export const statusesRouter = router({
         data: createData,
       });
 
+      // Log activity
+      await logActivity(
+        ctx,
+        'CREATE',
+        'status_created',
+        `Status "${status.name}" created`,
+        status.id,
+        'Status',
+        null,
+        status
+      );
+
       return status;
     }),
 
   // Update existing status
-  update: publicProcedure
+  update: protectedProcedure
     .input(z.object({
       id: z.string(),
       name: z.string().min(1),
@@ -95,6 +141,9 @@ export const statusesRouter = router({
       if (!existingStatus) {
         throw new Error('Status not found');
       }
+
+      // Store old data for logging
+      const oldStatus = { ...existingStatus };
 
       // Check if name already exists (excluding current status)
       const duplicateStatus = await ctx.db.status.findFirst({
@@ -123,11 +172,23 @@ export const statusesRouter = router({
         data: updateData,
       });
 
+      // Log activity
+      await logActivity(
+        ctx,
+        'UPDATE',
+        'status_updated',
+        `Status "${status.name}" updated`,
+        status.id,
+        'Status',
+        oldStatus,
+        status
+      );
+
       return status;
     }),
 
   // Delete status
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const status = await ctx.db.status.findFirst({
@@ -151,15 +212,30 @@ export const statusesRouter = router({
         throw new Error('Cannot delete status with existing reports');
       }
 
+      // Store status data for logging
+      const statusData = { ...status };
+
       await ctx.db.status.delete({
         where: { id: input.id },
       });
+
+      // Log activity
+      await logActivity(
+        ctx,
+        'DELETE',
+        'status_deleted',
+        `Status "${status.name}" deleted`,
+        status.id,
+        'Status',
+        statusData,
+        null
+      );
 
       return { success: true };
     }),
 
   // Reorder statuses
-  reorder: publicProcedure
+  reorder: protectedProcedure
     .input(z.object({
       statusOrders: z.array(z.object({
         id: z.string(),

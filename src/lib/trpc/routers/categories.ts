@@ -1,12 +1,56 @@
 import { z } from 'zod';
-import { publicProcedure, router } from '../server';
+import { protectedProcedure, router } from '../server';
+
+// Helper function to generate slug
+function generateSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9 -]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+}
+
+// Helper function to log activity
+async function logActivity(
+  ctx: any,
+  type: 'CREATE' | 'UPDATE' | 'DELETE',
+  action: string,
+  description: string,
+  entityId?: string,
+  entityType?: string,
+  oldData?: any,
+  newData?: any
+) {
+  try {
+    await ctx.db.activityLog.create({
+      data: {
+        type,
+        action,
+        description,
+        userId: ctx.session.user.id,
+        entityId,
+        entityType,
+        metadata: JSON.stringify({
+          oldData,
+          newData,
+          timestamp: new Date().toISOString(),
+        }),
+        ipAddress: ctx.req?.headers?.['x-forwarded-for'] || ctx.req?.socket?.remoteAddress,
+        userAgent: ctx.req?.headers['user-agent'],
+      },
+    });
+  } catch (error) {
+    console.error('Failed to log activity:', error);
+  }
+}
 
 /**
  * Categories router with CRUD operations
  */
 export const categoriesRouter = router({
   // Get all categories with filtering
-  getAll: publicProcedure
+  getAll: protectedProcedure
     .input(z.object({
       type: z.enum(['POST', 'PAGE']).optional(),
       search: z.string().optional(),
@@ -43,7 +87,7 @@ export const categoriesRouter = router({
     }),
 
   // Get single category by ID
-  getById: publicProcedure
+  getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const category = await ctx.db.category.findFirst({
@@ -68,7 +112,7 @@ export const categoriesRouter = router({
     }),
 
   // Create new category
-  create: publicProcedure
+  create: protectedProcedure
     .input(z.object({
       name: z.string().min(1),
       description: z.string().optional(),
@@ -78,12 +122,7 @@ export const categoriesRouter = router({
       const { name, description, type } = input;
 
       // Generate slug from name
-      const slug = name
-        .toLowerCase()
-        .replace(/[^a-z0-9 -]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .trim();
+      const slug = generateSlug(name);
 
       // Check if slug already exists
       const existingCategory = await ctx.db.category.findFirst({
@@ -111,11 +150,23 @@ export const categoriesRouter = router({
         data: createData,
       });
 
+      // Log activity
+      await logActivity(
+        ctx,
+        'CREATE',
+        'category_created',
+        `Category "${category.name}" created`,
+        category.id,
+        'Category',
+        null,
+        category
+      );
+
       return category;
     }),
 
   // Update existing category
-  update: publicProcedure
+  update: protectedProcedure
     .input(z.object({
       id: z.string(),
       name: z.string().min(1),
@@ -137,13 +188,11 @@ export const categoriesRouter = router({
         throw new Error('Category not found');
       }
 
+      // Store old data for logging
+      const oldCategory = { ...existingCategory };
+
       // Generate new slug if name changed
-      const slug = name
-        .toLowerCase()
-        .replace(/[^a-z0-9 -]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .trim();
+      const slug = generateSlug(name);
 
       // Check if slug already exists (excluding current category)
       const duplicateCategory = await ctx.db.category.findFirst({
@@ -173,11 +222,23 @@ export const categoriesRouter = router({
         data: updateData,
       });
 
+      // Log activity
+      await logActivity(
+        ctx,
+        'UPDATE',
+        'category_updated',
+        `Category "${category.name}" updated`,
+        category.id,
+        'Category',
+        oldCategory,
+        category
+      );
+
       return category;
     }),
 
   // Soft delete category
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const category = await ctx.db.category.findFirst({
@@ -202,12 +263,27 @@ export const categoriesRouter = router({
         throw new Error('Cannot delete category with existing posts');
       }
 
+      // Store category data for logging
+      const categoryData = { ...category };
+
       await ctx.db.category.update({
         where: { id: input.id },
         data: {
           deletedAt: new Date(),
         },
       });
+
+      // Log activity
+      await logActivity(
+        ctx,
+        'DELETE',
+        'category_deleted',
+        `Category "${category.name}" deleted`,
+        category.id,
+        'Category',
+        categoryData,
+        null
+      );
 
       return { success: true };
     }),

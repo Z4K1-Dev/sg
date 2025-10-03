@@ -1,12 +1,56 @@
 import { z } from 'zod';
-import { publicProcedure, router } from '../server';
+import { protectedProcedure, router } from '../server';
+
+// Helper function to generate slug
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9 -]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+}
+
+// Helper function to log activity
+async function logActivity(
+  ctx: any,
+  type: 'CREATE' | 'UPDATE' | 'DELETE',
+  action: string,
+  description: string,
+  entityId?: string,
+  entityType?: string,
+  oldData?: any,
+  newData?: any
+) {
+  try {
+    await ctx.db.activityLog.create({
+      data: {
+        type,
+        action,
+        description,
+        userId: ctx.session.user.id,
+        entityId,
+        entityType,
+        metadata: JSON.stringify({
+          oldData,
+          newData,
+          timestamp: new Date().toISOString(),
+        }),
+        ipAddress: ctx.req?.headers?.['x-forwarded-for'] || ctx.req?.socket?.remoteAddress,
+        userAgent: ctx.req?.headers['user-agent'],
+      },
+    });
+  } catch (error) {
+    console.error('Failed to log activity:', error);
+  }
+}
 
 /**
  * Posts router with CRUD operations
  */
 export const postsRouter = router({
   // Get all posts with pagination and filtering
-  getAll: publicProcedure
+  getAll: protectedProcedure
     .input(z.object({
       page: z.number().default(1),
       limit: z.number().default(10),
@@ -73,7 +117,7 @@ export const postsRouter = router({
     }),
 
   // Get single post by ID
-  getById: publicProcedure
+  getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const post = await ctx.db.post.findFirst({
@@ -107,7 +151,7 @@ export const postsRouter = router({
     }),
 
   // Create new post
-  create: publicProcedure
+  create: protectedProcedure
     .input(z.object({
       title: z.string().min(1),
       content: z.string(),
@@ -125,6 +169,7 @@ export const postsRouter = router({
       const createData: any = {
         ...postData,
         slug: generateSlug(postData.title),
+        authorId: ctx.session.user.id,
         publishedAt: postData.status === 'PUBLISHED' ? new Date() : null,
       };
 
@@ -162,11 +207,23 @@ export const postsRouter = router({
         });
       }
 
+      // Log activity
+      await logActivity(
+        ctx,
+        'CREATE',
+        'post_created',
+        `Post "${post.title}" created`,
+        post.id,
+        'Post',
+        null,
+        post
+      );
+
       return post;
     }),
 
   // Update existing post
-  update: publicProcedure
+  update: protectedProcedure
     .input(z.object({
       id: z.string(),
       title: z.string().min(1),
@@ -193,6 +250,9 @@ export const postsRouter = router({
       if (!existingPost) {
         throw new Error('Post not found');
       }
+
+      // Store old data for logging
+      const oldPost = { ...existingPost };
 
       // Update post
       const updatePayload: any = {
@@ -246,11 +306,23 @@ export const postsRouter = router({
         }
       }
 
+      // Log activity
+      await logActivity(
+        ctx,
+        'UPDATE',
+        'post_updated',
+        `Post "${post.title}" updated`,
+        post.id,
+        'Post',
+        oldPost,
+        post
+      );
+
       return post;
     }),
 
   // Soft delete post
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const post = await ctx.db.post.findFirst({
@@ -264,6 +336,9 @@ export const postsRouter = router({
         throw new Error('Post not found');
       }
 
+      // Store post data for logging before deletion
+      const postData = { ...post };
+
       await ctx.db.post.update({
         where: { id: input.id },
         data: {
@@ -271,11 +346,23 @@ export const postsRouter = router({
         },
       });
 
+      // Log activity
+      await logActivity(
+        ctx,
+        'DELETE',
+        'post_deleted',
+        `Post "${post.title}" deleted`,
+        post.id,
+        'Post',
+        postData,
+        null
+      );
+
       return { success: true };
     }),
 
   // Bulk operations
-  bulk: publicProcedure
+  bulk: protectedProcedure
     .input(z.object({
       action: z.enum(['delete', 'publish', 'unpublish', 'archive']),
       postIds: z.array(z.string()),
@@ -326,13 +413,3 @@ export const postsRouter = router({
       };
     }),
 });
-
-// Helper function to generate slug
-function generateSlug(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9 -]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim();
-}

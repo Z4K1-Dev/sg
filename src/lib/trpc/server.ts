@@ -13,6 +13,7 @@ import { ZodError } from 'zod';
 
 interface CreateContextOptions {
   req?: any;
+  session?: any;
 }
 
 /**
@@ -29,6 +30,7 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     db,
     req: opts.req,
+    session: opts.session,
   };
 };
 
@@ -43,6 +45,7 @@ export const createTRPCContext = (opts: any) => {
 
   return createInnerTRPCContext({
     req,
+    session: opts.session,
   });
 };
 
@@ -81,3 +84,20 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
  */
 export const router = t.router;
 export const publicProcedure = t.procedure;
+
+/**
+ * Protected (authenticated) procedure
+ */
+const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
+  if (!ctx.session || !ctx.session.user) {
+    throw new Error("You must be logged in to perform this action");
+  }
+  return next({
+    ctx: {
+      ...ctx,
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
+
+export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
