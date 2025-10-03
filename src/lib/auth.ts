@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth';
 import Google from 'next-auth/providers/google';
+import Github from 'next-auth/providers/github';
 import Credentials from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { PrismaClient } from '@prisma/client';
@@ -14,6 +15,10 @@ export const authOptions = {
     Google({
       clientId: process.env['GOOGLE_CLIENT_ID']!,
       clientSecret: process.env['GOOGLE_CLIENT_SECRET']!,
+    }),
+    Github({
+      clientId: process.env['GITHUB_CLIENT_ID']!,
+      clientSecret: process.env['GITHUB_CLIENT_SECRET']!,
     }),
     Credentials({
       async authorize(credentials) {
@@ -44,7 +49,7 @@ export const authOptions = {
                 userId: user.id,
                 entityId: user.id,
                 entityType: 'User',
-                ipAddress: '', // Would get from request in actual implementation
+                ipAddress: '', // Would get from request in actual step in actual implementation
                 userAgent: '', // Would get from request in actual implementation
               },
             });
