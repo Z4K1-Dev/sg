@@ -63,16 +63,16 @@
 ## 🔐 Phase 2: Authentication & Authorization
 
 ### 2.1 Auth.js Configuration
-- [ ] Install and configure Auth.js
-- [ ] Set up Google OAuth provider with proper credentials
-- [ ] Configure email/password registration system
-- [ ] Create custom authentication pages (login, register)
-- [ ] Implement session management with proper cookies
-- [ ] Set up JWT token handling
-- [ ] Configure authentication middleware for admin routes
-- [ ] Create custom login page with shadcn/ui components
-- [ ] Set up session timeout and refresh logic
-- [ ] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
+- [x] Install and configure Auth.js
+- [x] Set up Google OAuth provider with proper credentials
+- [x] Configure email/password registration system
+- [x] Create custom authentication pages (login, register)
+- [x] Implement session management with proper cookies
+- [x] Set up JWT token handling
+- [x] Configure authentication middleware for admin routes
+- [x] Create custom login page with shadcn/ui components
+- [x] Set up session timeout and refresh logic
+- [x] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 
 ### 2.2 User Management System
 - [ ] Create user registration API endpoints (/api/auth/register)

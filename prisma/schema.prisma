@@ -11,9 +11,10 @@ model User {
   id            String           @id @default(cuid())
   email         String           @unique
   name          String?
-  role          UserRole         @default("USER")
+  role          UserRole         @default(USER)
   avatar        String?
   bio           String?
+  password      String?
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
   deletedAt     DateTime?
@@ -30,7 +31,7 @@ model Category {
   id          String    @id @default(cuid())
   name        String
   slug        String    @unique
-  type        PostType  @default("POST")
+  type        PostType  @default(POST)
   description String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -59,8 +60,8 @@ model Post {
   content         String?
   excerpt         String?
   categoryId      String?
-  type            PostType    @default("POST")
-  status          PostStatus  @default("DRAFT")
+  type            PostType    @default(POST)
+  status          PostStatus  @default(DRAFT)
   metaTitle       String?
   metaDescription String?
   featuredImage   String?
@@ -112,7 +113,7 @@ model Media {
   path         String
   size         Int
   mimeType     String
-  type         MediaType     @default("OTHER")
+  type         MediaType     @default(OTHER)
   alt          String?
   title        String?
   description  String?
@@ -221,7 +222,7 @@ model Notification {
   id        String           @id @default(cuid())
   title     String
   message   String
-  type      NotificationType @default("INFO")
+  type      NotificationType @default(INFO)
   userId    String?
   isRead    Boolean          @default(false)
   data      String?
