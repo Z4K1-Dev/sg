@@ -1,4 +1,4 @@
-'use client';
+"use client"
 
 import { 
   DashboardLayout, 
@@ -54,7 +54,7 @@ export default function DashboardPage() {
       key: 'actions',
       label: 'Actions',
       render: () => (
-        <div className="flex items-center gap-2">
+        <div className="actions">
           <DashboardButton variant="outline" size="sm">
             <Edit size={14} />
             Edit

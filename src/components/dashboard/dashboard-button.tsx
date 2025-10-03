@@ -1,55 +1,14 @@
-import { cn } from '@/lib/utils'
-import { ButtonHTMLAttributes, ReactNode } from 'react'
+import { cn } from '@/lib/utils';
+import { Button, ButtonProps } from '@/components/ui/button';
 
-interface DashboardButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'outline'
-  size?: 'sm' | 'md' | 'lg'
-  children: ReactNode
-  className?: string
+interface DashboardButtonProps extends ButtonProps {
+  children: React.ReactNode;
 }
 
-export function DashboardButton({ 
-  variant = 'primary', 
-  size = 'md', 
-  children, 
-  className,
-  ...props 
-}: DashboardButtonProps) {
+export function DashboardButton({ children, className, ...props }: DashboardButtonProps) {
   return (
-    <button
-      className={cn(
-        'btn-dashboard',
-        {
-          'btn-dashboard-primary': variant === 'primary',
-          'btn-dashboard-outline': variant === 'outline',
-          'btn-dashboard-sm': size === 'sm',
-        },
-        className
-      )}
-      {...props}
-    >
+    <Button className={cn("", className)} {...props}>
       {children}
-    </button>
-  )
-}
-
-interface StatusBadgeProps {
-  status: 'published' | 'draft' | 'pending' | 'archived'
-  children?: ReactNode
-  className?: string
-}
-
-export function StatusBadge({ status, children, className }: StatusBadgeProps) {
-  const statusMap = {
-    published: 'status-published',
-    draft: 'status-draft',
-    pending: 'status-pending',
-    archived: 'status-archived',
-  }
-
-  return (
-    <span className={cn('status-badge', statusMap[status], className)}>
-      {children || status}
-    </span>
-  )
+    </Button>
+  );
 }

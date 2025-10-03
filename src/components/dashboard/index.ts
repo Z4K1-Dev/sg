@@ -1,5 +1,11 @@
-export { DashboardLayout } from './dashboard-layout'
-export { StatCard, StatsGrid } from './stat-card'
-export { DashboardTable, ContentSection } from './dashboard-table'
-export { QuickActions, QuickActionCard } from './quick-actions'
-export { DashboardButton, StatusBadge } from './dashboard-button'
+export { DashboardLayout } from './dashboard-layout';
+export { StatCard } from './stat-card';
+export { StatsGrid } from './stats-grid';
+export { ContentSection } from './content-section';
+export { DashboardTable } from './dashboard-table';
+export { QuickActions } from './quick-actions';
+export { DashboardButton } from './dashboard-button';
+export { StatusBadge } from './status-badge';
+export { UserNav } from './user-nav';
+export { ThemeToggle } from './theme-toggle';
+export { Breadcrumbs } from './breadcrumbs';
