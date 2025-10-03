@@ -8,12 +8,7 @@ import { z } from 'zod';
 
 const prisma = new PrismaClient();
 
-export const {
-  handlers: { GET, POST },
-  auth,
-  signIn,
-  signOut,
-} = NextAuth({
+export const authOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     Google({
@@ -39,7 +34,23 @@ export const {
           // Compare password
           const passwordsMatch = await compare(password, user.password);
 
-          if (passwordsMatch) return user;
+          if (passwordsMatch) {
+            // Create activity log for successful login
+            await prisma.activityLog.create({
+              data: {
+                type: 'LOGIN',
+                action: 'user_login',
+                description: `User ${user.email} logged in`,
+                userId: user.id,
+                entityId: user.id,
+                entityType: 'User',
+                ipAddress: '', // Would get from request in actual implementation
+                userAgent: '', // Would get from request in actual implementation
+              },
+            });
+            
+            return user;
+          }
         }
 
         return null;
@@ -67,4 +78,11 @@ export const {
     signIn: '/login',
   },
   secret: process.env['NEXTAUTH_SECRET']!,
-});
+};
+
+export const {
+  handlers: { GET, POST },
+  auth,
+  signIn,
+  signOut,
+} = NextAuth(authOptions);
