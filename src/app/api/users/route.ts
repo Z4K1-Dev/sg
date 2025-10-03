@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     const session = await auth();
     
     // Only admins can view all users
-    if (!session || !session.user || session.user.role !== 'ADMIN') {
+    if (!session || !session.user || (session.user as any).role !== 'ADMIN') {
       return new Response(
         JSON.stringify({ error: "Forbidden" }),
         { status: 403, headers: { "Content-Type": "application/json" } }
@@ -85,7 +85,7 @@ export async function PUT(request: Request) {
     const session = await auth();
     
     // Only admins can update user details
-    if (!session || !session.user || session.user.role !== 'ADMIN') {
+    if (!session || !session.user || (session.user as any).role !== 'ADMIN') {
       return new Response(
         JSON.stringify({ error: "Forbidden" }),
         { status: 403, headers: { "Content-Type": "application/json" } }
@@ -150,7 +150,7 @@ export async function DELETE(request: Request) {
     const session = await auth();
     
     // Only admins can delete users
-    if (!session || !session.user || session.user.role !== 'ADMIN') {
+    if (!session || !session.user || (session.user as any).role !== 'ADMIN') {
       return new Response(
         JSON.stringify({ error: "Forbidden" }),
         { status: 403, headers: { "Content-Type": "application/json" } }

@@ -1,24 +1,26 @@
 import { hashPassword } from '@/lib/utils';
 import { PrismaClient } from '@prisma/client';
-import { NextApiRequest, NextApiResponse } from 'next';
 
 const prisma = new PrismaClient();
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
-  }
-
+export async function POST(request: Request) {
   try {
-    const { name, email, password } = req.body;
+    const body = await request.json();
+    const { name, email, password } = body;
 
     // Validate input
     if (!name || !email || !password) {
-      return res.status(400).json({ message: 'Missing required fields' });
+      return new Response(
+        JSON.stringify({ message: 'Missing required fields' }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
     }
 
     if (password.length < 6) {
-      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+      return new Response(
+        JSON.stringify({ message: 'Password must be at least 6 characters' }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
     }
 
     // Check if user already exists
@@ -27,7 +29,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     if (existingUser) {
-      return res.status(409).json({ message: 'User with this email already exists' });
+      return new Response(
+        JSON.stringify({ message: 'User with this email already exists' }),
+        { status: 409, headers: { "Content-Type": "application/json" } }
+      );
     }
 
     // Hash the password
@@ -39,16 +44,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         name,
         email,
         password: hashedPassword,
-        role: 'USER', // Default role - this matches the UserRole enum
+        role: 'USER', // Default role
       },
     });
 
     // Return success response (excluding password)
     const { password: _, ...userWithoutPassword } = user;
-    res.status(201).json({ user: userWithoutPassword });
+    return new Response(
+      JSON.stringify({ user: userWithoutPassword }),
+      { status: 201, headers: { "Content-Type": "application/json" } }
+    );
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    return new Response(
+      JSON.stringify({ message: 'Internal server error' }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
   } finally {
     await prisma.$disconnect();
   }

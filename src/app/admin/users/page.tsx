@@ -29,7 +29,7 @@ export default function UserManagementPage() {
   const [roleFilter, setRoleFilter] = useState('all');
 
   useEffect(() => {
-    if (session?.user?.role === 'ADMIN') {
+    if (session?.user && (session.user as any)?.role === 'ADMIN') {
       fetchUsers();
     }
   }, [session]);
@@ -121,7 +121,7 @@ export default function UserManagementPage() {
     return <div>Loading...</div>;
   }
 
-  if (session?.user?.role !== 'ADMIN') {
+  if ((session?.user as any)?.role !== 'ADMIN') {
     return <div>Access denied. Admin privileges required.</div>;
   }
 

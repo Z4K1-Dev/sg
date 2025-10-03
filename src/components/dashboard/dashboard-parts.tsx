@@ -1,18 +1,18 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { UserNav } from './user-nav';
-import { ThemeToggle } from './theme-toggle';
 import { Breadcrumbs } from './breadcrumbs';
+import { ThemeToggle } from './theme-toggle';
+import { UserNav } from './user-nav';
 
 interface SidebarProps {
   isOpen: boolean;
   onToggle: () => void;
-  userName?: string;
-  userAvatar?: string;
+  userName?: string | undefined;
+  userAvatar?: string | undefined;
 }
 
 const navItems = [
@@ -102,11 +102,9 @@ interface HeaderProps {
   title: string;
   sidebarOpen: boolean;
   onSidebarToggle: () => void;
-  userName?: string;
-  userAvatar?: string;
 }
 
-export function Header({ title, sidebarOpen, onSidebarToggle, userName, userAvatar }: HeaderProps) {
+export function Header({ title, onSidebarToggle }: HeaderProps) {
   return (
     <header className="border-b bg-background h-16 flex items-center px-4 md:px-6 sticky top-0 z-40">
       <div className="flex items-center justify-between w-full">
@@ -127,7 +125,7 @@ export function Header({ title, sidebarOpen, onSidebarToggle, userName, userAvat
         
         <div className="flex items-center gap-4">
           <ThemeToggle />
-          <UserNav userName={userName} userAvatar={userAvatar} />
+          <UserNav />
         </div>
       </div>
     </header>

@@ -1,19 +1,37 @@
-Runtime Error
-Server
-
-
-Event handlers cannot be passed to Client Component props.
-  <div className=... onClick={function onClick} children=...>
-                             ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-
-src\app\dashboard\page.tsx (152:9) @ DashboardPage
-
-
-  150 |       {/* Quick Actions */}
-  151 |       <ContentSection title="Quick Actions">
-> 152 |         <QuickActions actions={quickActions} />
-      |         ^
-  153 |       </ContentSection>
-  154 |     </DashboardLayout>
-  155 |   )
+ POST /api/auth/callback/credentials? 200 in 573ms
+[auth][error] AdapterError: Read more at https://errors.authjs.dev#adaptererror
+[auth][cause]: TypeError: Cannot read properties of undefined (reading 'findUnique')
+    at getSessionAndUser (webpack-internal:///(rsc)/./node_modules/@auth/prisma-adapter/index.js:29:52)
+    at acc.<computed> (webpack-internal:///(rsc)/./node_modules/@auth/core/lib/init.js:174:30)
+    at Module.session (webpack-internal:///(rsc)/./node_modules/@auth/core/lib/actions/session.js:74:36)
+    at AuthInternal (webpack-internal:///(rsc)/./node_modules/@auth/core/lib/index.js:51:77)
+    at async Auth (webpack-internal:///(rsc)/./node_modules/@auth/core/index.js:130:34)
+    at async AppRouteRouteModule.do (X:\2025\smartgov\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:38696)
+    at async AppRouteRouteModule.handle (X:\2025\smartgov\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:45978)
+    at async responseGenerator (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fauth%2F%5B...nextauth%5D%2Froute&page=%2Fapi%2Fauth%2F%5B...nextauth%5D%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fauth%2F%5B...nextauth%5D%2Froute.ts&appDir=X%3A%5C2025%5Csmartgov%5Csrc%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=X%3A%5C2025%5Csmartgov&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:203:38)
+    at async AppRouteRouteModule.handleResponse (X:\2025\smartgov\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:1:187565)      
+    at async handleResponse (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fauth%2F%5B...nextauth%5D%2Froute&page=%2Fapi%2Fauth%2F%5B...nextauth%5D%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fauth%2F%5B...nextauth%5D%2Froute.ts&appDir=X%3A%5C2025%5Csmartgov%5Csrc%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=X%3A%5C2025%5Csmartgov&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:265:32)
+    at async handler (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fauth%2F%5B...nextauth%5D%2Froute&page=%2Fapi%2Fauth%2F%5B...nextauth%5D%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fauth%2F%5B...nextauth%5D%2Froute.ts&appDir=X%3A%5C2025%5Csmartgov%5Csrc%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=X%3A%5C2025%5Csmartgov&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:317:13)
+    at async DevServer.renderToResponseWithComponentsImpl (X:\2025\smartgov\node_modules\next\dist\server\base-server.js:1422:9)
+    at async DevServer.renderPageComponent (X:\2025\smartgov\node_modules\next\dist\server\base-server.js:1474:24)
+    at async DevServer.renderToResponseImpl (X:\2025\smartgov\node_modules\next\dist\server\base-server.js:1514:32)
+    at async DevServer.pipeImpl (X:\2025\smartgov\node_modules\next\dist\server\base-server.js:1025:25)
+    at async NextNodeServer.handleCatchallRenderRequest (X:\2025\smartgov\node_modules\next\dist\server\next-server.js:393:17)
+    at async DevServer.handleRequestImpl (X:\2025\smartgov\node_modules\next\dist\server\base-server.js:916:17)
+    at async X:\2025\smartgov\node_modules\next\dist\server\dev\next-dev-server.js:399:20
+    at async Span.traceAsyncFn (X:\2025\smartgov\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (X:\2025\smartgov\node_modules\next\dist\server\dev\next-dev-server.js:395:24)
+    at async invokeRender (X:\2025\smartgov\node_modules\next\dist\server\lib\router-server.js:240:21)
+    at async handleRequest (X:\2025\smartgov\node_modules\next\dist\server\lib\router-server.js:437:24)
+    at async NextCustomServer.requestHandlerImpl (X:\2025\smartgov\node_modules\next\dist\server\lib\router-server.js:485:13)
+[auth][details]: {}
+[auth][error] SessionTokenError: Read more at https://errors.authjs.dev#sessiontokenerror
+[auth][cause]: TypeError: Cannot read properties of undefined (reading 'findUnique')
+    at getSessionAndUser (webpack-internal:///(rsc)/./node_modules/@auth/prisma-adapter/index.js:29:52)
+    at acc.<computed> (webpack-internal:///(rsc)/./node_modules/@auth/core/lib/init.js:174:30)
+    at Module.session (webpack-internal:///(rsc)/./node_modules/@auth/core/lib/actions/session.js:74:36)
+    at AuthInternal (webpack-internal:///(rsc)/./node_modules/@auth/core/lib/index.js:51:77)
+    at async Auth (webpack-internal:///(rsc)/./node_modules/@auth/core/index.js:130:34)
+    at async AppRouteRouteModule.do (X:\2025\smartgov\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:38696)
+    at async AppRouteRouteModule.handle (X:\2025\smartgov\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:45978)
+    at async responseGenerator (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fauth%2F%5B...nextauth%5D%2Froute&page=%2Fapi%2Fauth%2F%5B...nextauth%5D%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fauth%2F%5B...nextauth%5D%2Froute.ts&appDir=X%3A%5C2025%5Csmartgov%5Csrc%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=X%3A%5C2025%5Csmartgov&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:203:38)

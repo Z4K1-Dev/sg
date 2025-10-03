@@ -1,4 +1,3 @@
-import { DashboardButton } from './dashboard-button';
 import { cn } from '@/lib/utils';
 
 interface QuickAction {

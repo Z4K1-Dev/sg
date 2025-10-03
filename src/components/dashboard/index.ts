@@ -9,3 +9,8 @@ export { StatusBadge } from './status-badge';
 export { UserNav } from './user-nav';
 export { ThemeToggle } from './theme-toggle';
 export { Breadcrumbs } from './breadcrumbs';
+export { PostsOverTimeChart, ReportsByStatusChart, StatCardChart } from './chart';
+export { NotificationCenter } from './notification-center';
+export { GlobalSearch } from './global-search';
+export { FilterSortControls } from './filter-sort';
+export { DashboardRefresh } from './dashboard-refresh';

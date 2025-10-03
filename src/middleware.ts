@@ -1,6 +1,5 @@
-import { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 // Define role-based access for different paths
 const roleAccess = {
@@ -77,7 +76,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (requiredRoles && token) {
-    const userRole = token['role'] || 'USER';
+    const userRole = (token['role'] as string) || 'USER';
     if (!requiredRoles.includes(userRole)) {
       // User doesn't have required role, redirect to unauthorized page
       const url = request.nextUrl.clone();

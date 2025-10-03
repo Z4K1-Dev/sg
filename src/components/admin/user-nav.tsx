@@ -30,7 +30,7 @@ export function UserNav() {
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
             <AvatarImage 
-              src={session.user.image || session.user.avatar || undefined} 
+              src={session.user.image || (session.user as any).avatar || undefined} 
               alt={session.user.name || "User"} 
             />
             <AvatarFallback>
@@ -49,7 +49,7 @@ export function UserNav() {
               {session.user.email}
             </p>
             <Badge variant="secondary" className="w-fit mt-1">
-              {session.user.role || 'USER'}
+              {(session.user as any).role || 'USER'}
             </Badge>
           </div>
         </DropdownMenuLabel>

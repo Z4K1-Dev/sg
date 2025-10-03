@@ -1,6 +1,7 @@
 'use client';
 
-import { useSession, signOut } from 'next-auth/react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -10,15 +11,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { signOut, useSession } from 'next-auth/react';
 
 interface UserNavProps {
   userName?: string;
-  userAvatar?: string;
 }
 
-export function UserNav({ userName, userAvatar }: UserNavProps) {
+export function UserNav({ userName }: UserNavProps) {
   const { data: session } = useSession();
 
   const handleSignOut = async () => {
@@ -34,9 +33,9 @@ export function UserNav({ userName, userAvatar }: UserNavProps) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage 
-              src={session.user.image || session.user.avatar || undefined} 
-              alt={session.user.name || "User"} 
+            <AvatarImage
+              src={session.user.image || (session.user as any).avatar || undefined}
+              alt={session.user.name || "User"}
             />
             <AvatarFallback>
               {session.user.name?.charAt(0) || userName?.charAt(0) || 'U'}
@@ -54,7 +53,7 @@ export function UserNav({ userName, userAvatar }: UserNavProps) {
               {session.user.email}
             </p>
             <Badge variant="secondary" className="w-fit mt-1">
-              {session.user.role || 'USER'}
+              {(session.user as any).role || 'USER'}
             </Badge>
           </div>
         </DropdownMenuLabel>

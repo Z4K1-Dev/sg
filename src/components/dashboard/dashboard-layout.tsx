@@ -1,15 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { SessionProvider } from 'next-auth/react';
-import { 
-  Sidebar, 
-  Header,
-  SidebarToggle,
-  Breadcrumbs,
-  ThemeToggle
-} from './dashboard-parts';
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
+import {
+  Header,
+  Sidebar
+} from './dashboard-parts';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -37,12 +33,10 @@ export function DashboardLayout({ children, title = "Admin Dashboard", userName,
         sidebarOpen ? "ml-64" : "ml-0"
       )}>
         {/* Header */}
-        <Header 
+        <Header
           title={title}
           sidebarOpen={sidebarOpen}
           onSidebarToggle={() => setSidebarOpen(!sidebarOpen)}
-          userName={userName}
-          userAvatar={userAvatar}
         />
 
         {/* Main content area with scrolling */}

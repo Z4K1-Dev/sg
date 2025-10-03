@@ -26,8 +26,8 @@ export default function ProfilePage() {
     if (session?.user) {
       setName(session.user.name || '');
       setEmail(session.user.email || '');
-      setBio(session.user.bio || '');
-      setAvatar(session.user.avatar || '');
+      setBio((session.user as any).bio || '');
+      setAvatar((session.user as any).avatar || '');
       setIsLoading(false);
     }
   }, [session]);

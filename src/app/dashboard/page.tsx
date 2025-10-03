@@ -7,9 +7,9 @@ import {
   ContentSection, 
   DashboardTable, 
   QuickActions, 
-  DashboardButton, 
   StatusBadge 
 } from '@/components/dashboard'
+import { Button } from '@/components/ui/button'
 import { Plus, Edit, Trash2, FileText, BarChart3, MessageSquare, Upload } from 'lucide-react'
 
 export default function DashboardPage() {
@@ -55,14 +55,14 @@ export default function DashboardPage() {
       label: 'Actions',
       render: () => (
         <div className="flex items-center gap-2">
-          <DashboardButton variant="outline" size="sm">
+          <Button variant="outline" size="sm">
             <Edit size={14} />
             Edit
-          </DashboardButton>
-          <DashboardButton variant="outline" size="sm">
+          </Button>
+          <Button variant="outline" size="sm">
             <Trash2 size={14} />
             Delete
-          </DashboardButton>
+          </Button>
         </div>
       )
     }
@@ -137,10 +137,10 @@ export default function DashboardPage() {
       <ContentSection 
         title="Recent Posts"
         action={
-          <DashboardButton>
+          <Button>
             <Plus size={16} />
             New Post
-          </DashboardButton>
+          </Button>
         }
       >
         <DashboardTable 

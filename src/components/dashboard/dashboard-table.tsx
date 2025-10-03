@@ -15,7 +15,7 @@ interface DashboardTableProps<T = any> {
 
 export function DashboardTable<T>({ columns, data, className }: DashboardTableProps<T>) {
   return (
-    <div className="rounded-md border overflow-hidden">
+    <div className={cn("rounded-md border overflow-hidden", className)}>
       <table className="w-full">
         <thead className="bg-muted/50">
           <tr>
