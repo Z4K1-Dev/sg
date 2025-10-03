@@ -8,6 +8,7 @@ export async function GET(request: Request) {
   try {
     const session = await auth();
     
+    // Only admins can view all users
     if (!session || !session.user || session.user.role !== 'ADMIN') {
       return new Response(
         JSON.stringify({ error: "Forbidden" }),
@@ -83,6 +84,7 @@ export async function PUT(request: Request) {
   try {
     const session = await auth();
     
+    // Only admins can update user details
     if (!session || !session.user || session.user.role !== 'ADMIN') {
       return new Response(
         JSON.stringify({ error: "Forbidden" }),
@@ -110,7 +112,7 @@ export async function PUT(request: Request) {
       data: {
         name: name || undefined,
         email: email || undefined,
-        role: role || undefined,
+        role: role || undefined, // Only admins can change roles
         bio: bio || undefined,
         avatar: avatar || undefined,
         updatedAt: new Date(),
@@ -147,6 +149,7 @@ export async function DELETE(request: Request) {
   try {
     const session = await auth();
     
+    // Only admins can delete users
     if (!session || !session.user || session.user.role !== 'ADMIN') {
       return new Response(
         JSON.stringify({ error: "Forbidden" }),
@@ -161,6 +164,14 @@ export async function DELETE(request: Request) {
     if (!userId) {
       return new Response(
         JSON.stringify({ error: "User ID is required" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // Prevent admin from deleting themselves
+    if (session.user.id === userId) {
+      return new Response(
+        JSON.stringify({ error: "Cannot delete your own account" }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
