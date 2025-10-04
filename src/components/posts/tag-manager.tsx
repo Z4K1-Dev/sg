@@ -110,7 +110,7 @@ export function TagManager({
   const [sortBy, setSortBy] = useState<'name' | 'posts' | 'created'>('name');
 
   const createForm = useForm<TagFormData>({
-    resolver: zodResolver(tagFormSchema),
+    resolver: zodResolver(tagFormSchema) as any,
     defaultValues: {
       name: '',
       slug: '',
@@ -118,7 +118,7 @@ export function TagManager({
   });
 
   const editForm = useForm<TagFormData>({
-    resolver: zodResolver(tagFormSchema),
+    resolver: zodResolver(tagFormSchema) as any,
     defaultValues: {
       name: '',
       slug: '',
@@ -579,7 +579,7 @@ export function TagManager({
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDelete}
-              disabled={isDeleting || (selectedTag && (selectedTag._count?.posts || 0) > 0)}
+              disabled={isDeleting || (selectedTag && (selectedTag._count?.posts || 0) > 0) || false}
               className="bg-red-600 hover:bg-red-700"
             >
               {isDeleting ? "Deleting..." : "Delete"}

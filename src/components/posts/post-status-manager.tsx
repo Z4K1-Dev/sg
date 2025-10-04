@@ -18,17 +18,14 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { 
-  Eye, 
-  Edit, 
-  Archive, 
+import {
+  Eye,
+  Edit,
+  Archive,
   Clock,
   CheckCircle,
-  AlertCircle,
   RefreshCw,
   Settings
 } from 'lucide-react';
@@ -86,9 +83,7 @@ const statusConfig = {
 
 export function PostStatusManager({
   posts = [],
-  statuses = [],
   onStatusChange,
-  onBulkStatusChange,
   onRefresh,
   loading = false,
 }: PostStatusManagerProps) {

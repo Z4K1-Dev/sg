@@ -312,4 +312,4 @@ export function PostCard({
   );
 }
 
-export type { Post };
+export type { PostCategory, PostTag };

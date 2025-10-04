@@ -26,20 +26,13 @@ import {
 import {
   Collapsible,
   CollapsibleContent,
-  CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
-import { 
-  Search, 
-  Filter, 
-  X, 
-  ChevronDown, 
-  ChevronUp,
-  Calendar,
-  User,
-  Tag,
-  Folder,
+import {
+  Search,
+  Filter,
+  X,
   SlidersHorizontal
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
@@ -106,7 +99,7 @@ export function PostSearch({
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
   const form = useForm<AdvancedSearchData>({
-    resolver: zodResolver(advancedSearchSchema),
+    resolver: zodResolver(advancedSearchSchema) as any,
     defaultValues: {
       query: '',
       title: '',
@@ -318,7 +311,7 @@ export function PostSearch({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Category</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
+                          <Select onValueChange={field.onChange} value={field.value || ""}>
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Select category" />
@@ -344,7 +337,7 @@ export function PostSearch({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Author</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
+                          <Select onValueChange={field.onChange} value={field.value || ""}>
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Select author" />
@@ -370,7 +363,7 @@ export function PostSearch({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Status</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
+                          <Select onValueChange={field.onChange} value={field.value || ""}>
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Select status" />
@@ -394,7 +387,7 @@ export function PostSearch({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Type</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
+                          <Select onValueChange={field.onChange} value={field.value || ""}>
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Select type" />
@@ -469,7 +462,7 @@ export function PostSearch({
                         <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                           <FormControl>
                             <Checkbox
-                              checked={field.value}
+                              checked={field.value || false}
                               onCheckedChange={field.onChange}
                             />
                           </FormControl>
@@ -488,7 +481,7 @@ export function PostSearch({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Sort By</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
+                          <Select onValueChange={field.onChange} value={field.value || "createdAt"}>
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue />
@@ -512,7 +505,7 @@ export function PostSearch({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Sort Order</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
+                          <Select onValueChange={field.onChange} value={field.value || "desc"}>
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue />

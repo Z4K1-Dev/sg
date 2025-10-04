@@ -1,13 +1,12 @@
 'use client';
 
 import { format } from 'date-fns';
-import { 
-  Calendar, 
-  User, 
-  Eye, 
-  Edit, 
-  Share2, 
-  Printer, 
+import {
+  Calendar,
+  Eye,
+  Edit,
+  Share2,
+  Printer,
   Clock,
   Tag,
   Folder,
@@ -70,7 +69,6 @@ export function PostDetail({
   onBack,
   onShare,
   onPrint,
-  loading = false,
   showActions = true,
 }: PostDetailProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -102,7 +100,7 @@ export function PostDetail({
     if (navigator.share) {
       navigator.share({
         title: post.title,
-        text: post.excerpt || post.content?.substring(0, 160),
+        text: (post.excerpt || post.content?.substring(0, 160)) || '',
         url: window.location.href,
       });
     } else {

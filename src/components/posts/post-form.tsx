@@ -40,18 +40,11 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { 
-  Alert, 
-  AlertDescription 
-} from '@/components/ui/alert';
-import { 
   Save, 
   Eye, 
   Upload, 
   X, 
-  Plus,
   FileText,
-  Settings,
-  Search,
   Image as ImageIcon
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
@@ -140,7 +133,6 @@ export function PostForm({
   post,
   categories = [],
   tags = [],
-  loading = false,
   onSave,
   onSaveDraft,
   onPreview,
@@ -148,20 +140,19 @@ export function PostForm({
   mode = 'create',
 }: PostFormProps) {
   const [isSaving, setIsSaving] = useState(false);
-  const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>(post?.tags.map(pt => pt.tag.id) || []);
   const [featuredImage, setFeaturedImage] = useState(post?.featuredImage || '');
   const [autoGenerateSlug, setAutoGenerateSlug] = useState(true);
   const [activeTab, setActiveTab] = useState('content');
 
   const form = useForm<PostFormData>({
-    resolver: zodResolver(postFormSchema),
+    resolver: zodResolver(postFormSchema) as any,
     defaultValues: {
       title: post?.title || '',
       slug: post?.slug || '',
       content: post?.content || '',
       excerpt: post?.excerpt || '',
-      categoryId: post?.categoryId || '',
+      categoryId: post?.category?.id || '',
       status: post?.status || 'DRAFT',
       type: post?.type || 'POST',
       metaTitle: post?.metaTitle || '',
@@ -281,14 +272,14 @@ export function PostForm({
           <Button 
             variant="outline" 
             onClick={() => handleSave('DRAFT')}
-            disabled={isSaving || isSavingDraft}
+            disabled={isSaving}
           >
             <Save className="h-4 w-4 mr-2" />
-            {isSavingDraft ? 'Saving...' : 'Save Draft'}
+            {isSaving ? 'Saving...' : 'Save Draft'}
           </Button>
           <Button 
             onClick={() => handleSave('PUBLISHED')}
-            disabled={isSaving || isSavingDraft}
+            disabled={isSaving}
           >
             <Save className="h-4 w-4 mr-2" />
             {isSaving ? 'Publishing...' : 'Publish'}
@@ -536,7 +527,7 @@ export function PostForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Post Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select post type" />
@@ -558,7 +549,7 @@ export function PostForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Status</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select status" />
@@ -581,7 +572,7 @@ export function PostForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Category</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value || ""} defaultValue={field.value || ""}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select category" />
@@ -621,7 +612,7 @@ export function PostForm({
                           className="cursor-pointer"
                           onClick={() => handleTagToggle(tag.id)}
                         >
-                          {tag.name}
+                          {tag.tag.name}
                         </Badge>
                       ))}
                     </div>

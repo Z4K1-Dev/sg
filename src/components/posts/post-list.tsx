@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { PostCard, Post } from './post-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -47,10 +46,6 @@ interface PaginationInfo {
   pages: number;
 }
 
-interface PostListResponse {
-  posts: Post[];
-  pagination: PaginationInfo;
-}
 
 interface PostCategory {
   id: string;
@@ -101,7 +96,6 @@ export function PostList({
   categories = [],
   authors = [],
   onRefresh,
-  onSearch,
   onFilter,
   onPageChange,
   onPostEdit,
@@ -465,10 +459,10 @@ export function PostList({
             <PostCard
               key={post.id}
               post={post}
-              onEdit={onPostEdit}
-              onDelete={onPostDelete}
-              onView={onPostView}
-              onStatusChange={onPostStatusChange}
+              onEdit={onPostEdit || (() => {})}
+              onDelete={onPostDelete || (() => {})}
+              onView={onPostView || (() => {})}
+              onStatusChange={onPostStatusChange || (() => {})}
               isSelected={selectedPosts.has(post.id)}
               onSelect={handlePostSelect}
               showCheckbox={viewMode === 'list'}

@@ -159,38 +159,38 @@
 - [x] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 
 ### 4.2 Posts API Development with tRPC
-- [ ] Create posts tRPC router with CRUD procedures
-  - [ ] posts.getAll (list with pagination, search, filtering)
-  - [ ] posts.getById (single post)
-  - [ ] posts.create (create new post)
-  - [ ] posts.update (update post)
-  - [ ] posts.delete (soft delete)
-  - [ ] posts.bulk (bulk actions)
-- [ ] Implement post search and filtering with tRPC
-- [ ] Create post category management tRPC procedures
-- [ ] Implement tag management tRPC procedures
-- [ ] Set up post status management with tRPC
-- [ ] Create post validation schemas with Zod (shared)
-- [ ] Implement post SEO metadata handling with tRPC
-- [ ] Add post activity logging with tRPC
-- [ ] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
+- [x] Create posts tRPC router with CRUD procedures
+  - [x] posts.getAll (list with pagination, search, filtering)
+  - [x] posts.getById (single post)
+  - [x] posts.create (create new post)
+  - [x] posts.update (update post)
+  - [x] posts.delete (soft delete)
+  - [x] posts.bulk (bulk actions)
+- [x] Implement post search and filtering with tRPC
+- [x] Create post category management tRPC procedures
+- [x] Implement tag management tRPC procedures
+- [x] Set up post status management with tRPC
+- [x] Create post validation schemas with Zod (shared)
+- [x] Implement post SEO metadata handling with tRPC
+- [x] Add post activity logging with tRPC
+- [x] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 
 ### 4.3 Posts UI Components
-- [ ] Create posts list page with filtering and search (/src/app/admin/posts/page.tsx)
-- [ ] Implement post creation form with shadcn/ui components
-- [ ] Set up CKEditor 5 integration for rich text editing
-  - [ ] Configure toolbar with formatting options
-  - [ ] Set up image insertion from media library
-  - [ ] Implement link insertion functionality
-  - [ ] Add table creation support
-  - [ ] Configure source code viewing
-- [ ] Create post editing interface with autosave
-- [ ] Implement category selection component with dropdown
-- [ ] Create tag management interface with autocomplete
-- [ ] Set up post preview functionality
-- [ ] Create post SEO metadata form
-- [ ] Implement post publishing workflow
-- [ ] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
+- [x] Create posts list page with filtering and search (/src/app/admin/posts/page.tsx)
+- [x] Implement post creation form with shadcn/ui components
+- [x] Set up CKEditor 5 integration for rich text editing
+  - [x] Configure toolbar with formatting options
+  - [x] Set up image insertion from media library
+  - [x] Implement link insertion functionality
+  - [x] Add table creation support
+  - [x] Configure source code viewing
+- [x] Create post editing interface with autosave
+- [x] Implement category selection component with dropdown
+- [x] Create tag management interface with autocomplete
+- [x] Set up post preview functionality
+- [x] Create post SEO metadata form
+- [x] Implement post publishing workflow
+- [x] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 
 ### 4.4 Posts Features with Real-time Updates
 - [ ] Implement draft/published status toggle with Socket.io triggers

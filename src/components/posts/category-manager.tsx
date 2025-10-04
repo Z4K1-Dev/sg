@@ -111,7 +111,7 @@ export function CategoryManager({
   const [autoGenerateSlug, setAutoGenerateSlug] = useState(true);
 
   const createForm = useForm<CategoryFormData>({
-    resolver: zodResolver(categoryFormSchema),
+    resolver: zodResolver(categoryFormSchema) as any,
     defaultValues: {
       name: '',
       slug: '',
@@ -121,7 +121,7 @@ export function CategoryManager({
   });
 
   const editForm = useForm<CategoryFormData>({
-    resolver: zodResolver(categoryFormSchema),
+    resolver: zodResolver(categoryFormSchema) as any,
     defaultValues: {
       name: '',
       slug: '',
@@ -611,7 +611,7 @@ export function CategoryManager({
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDelete}
-              disabled={isDeleting || (selectedCategory && (selectedCategory._count?.posts || 0) > 0)}
+              disabled={isDeleting || (selectedCategory && (selectedCategory._count?.posts || 0) > 0) || false}
               className="bg-red-600 hover:bg-red-700"
             >
               {isDeleting ? "Deleting..." : "Delete"}
