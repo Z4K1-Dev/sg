@@ -206,16 +206,16 @@
 - [x] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 
 ### 4.5 Posts Features with Real-time Updates
-- [ ] Implement draft/published status toggle
-- [ ] Create post duplication feature
-- [ ] Implement bulk actions (delete, publish, unpublish, change category)
-- [ ] Create post revision history system
-- [ ] Implement advanced post search functionality
-- [ ] Set up post export features (JSON, CSV)
+- [x] Implement draft/published status toggle
+- [x] Create post duplication feature
+- [x] Implement bulk actions (delete, publish, unpublish, change category)
+- [x] Create post revision history system
+- [x] Implement advanced post search functionality
+- [x] Set up post export features (JSON, CSV)
 - [ ] Create post scheduling system (if needed)
 - [ ] Implement post template system
 - [ ] Set up post analytics (views, engagement)
-- [ ] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
+- [x] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 
 ## 📄 Phase 5: Pages Management System
 
