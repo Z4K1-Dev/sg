@@ -38,17 +38,16 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
-import { 
-  Save, 
-  Eye, 
-  Upload, 
-  X, 
-  FileText,
+import {
+  Save,
+  Eye,
+  Upload,
+  X,
   Image as ImageIcon
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Post, PostCategory, PostTag } from './post-card';
+import CKEditorComponent from './ckeditor-editor';
 
 // Form schema
 const postFormSchema = z.object({
@@ -79,55 +78,6 @@ interface PostFormProps {
   mode?: 'create' | 'edit';
 }
 
-// Simple rich text editor component (placeholder for CKEditor integration)
-const RichTextEditor = ({ 
-  value, 
-  onChange, 
-  placeholder 
-}: { 
-  value: string; 
-  onChange: (value: string) => void; 
-  placeholder?: string;
-}) => {
-  return (
-    <div className="border rounded-md">
-      <div className="border-b bg-gray-50 p-2 flex items-center gap-2">
-        <Button variant="ghost" size="sm">
-          <strong>B</strong>
-        </Button>
-        <Button variant="ghost" size="sm">
-          <em>I</em>
-        </Button>
-        <Button variant="ghost" size="sm">
-          <u>U</u>
-        </Button>
-        <Separator orientation="vertical" className="h-6" />
-        <Button variant="ghost" size="sm">
-          H1
-        </Button>
-        <Button variant="ghost" size="sm">
-          H2
-        </Button>
-        <Button variant="ghost" size="sm">
-          H3
-        </Button>
-        <Separator orientation="vertical" className="h-6" />
-        <Button variant="ghost" size="sm">
-          <FileText className="h-4 w-4" />
-        </Button>
-        <Button variant="ghost" size="sm">
-          <ImageIcon className="h-4 w-4" />
-        </Button>
-      </div>
-      <Textarea
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="border-0 resize-none min-h-[300px] focus-visible:ring-0"
-      />
-    </div>
-  );
-};
 
 export function PostForm({
   post,
@@ -144,6 +94,8 @@ export function PostForm({
   const [featuredImage, setFeaturedImage] = useState(post?.featuredImage || '');
   const [autoGenerateSlug, setAutoGenerateSlug] = useState(true);
   const [activeTab, setActiveTab] = useState('content');
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isAutoSaving, setIsAutoSaving] = useState(false);
 
   const form = useForm<PostFormData>({
     resolver: zodResolver(postFormSchema) as any,
@@ -193,6 +145,49 @@ export function PostForm({
       setValue('metaDescription', description);
     }
   }, [contentValue, setValue]);
+
+  // Auto-save functionality
+  useEffect(() => {
+    const autoSaveInterval = setInterval(async () => {
+      const currentData = form.getValues();
+      const hasChanges = JSON.stringify(currentData) !== JSON.stringify({
+        title: post?.title || '',
+        slug: post?.slug || '',
+        content: post?.content || '',
+        excerpt: post?.excerpt || '',
+        categoryId: post?.category?.id || '',
+        status: post?.status || 'DRAFT',
+        type: post?.type || 'POST',
+        metaTitle: post?.metaTitle || '',
+        metaDescription: post?.metaDescription || '',
+        featuredImage: post?.featuredImage || '',
+        tagIds: post?.tags.map(pt => pt.tag.id) || [],
+      });
+
+      if (hasChanges && !isSaving && !isAutoSaving) {
+        setIsAutoSaving(true);
+        try {
+          const formData = {
+            ...currentData,
+            status: 'DRAFT' as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED',
+            tagIds: selectedTags,
+            featuredImage,
+          };
+          
+          if (onSaveDraft) {
+            await onSaveDraft(formData);
+            setLastSaved(new Date());
+          }
+        } catch (error) {
+          console.error('Auto-save failed:', error);
+        } finally {
+          setIsAutoSaving(false);
+        }
+      }
+    }, 30000); // Auto-save every 30 seconds
+
+    return () => clearInterval(autoSaveInterval);
+  }, [form, selectedTags, featuredImage, isSaving, isAutoSaving, onSaveDraft, post]);
 
   const handleSave = async (status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED') => {
     setIsSaving(true);
@@ -260,6 +255,21 @@ export function PostForm({
           <p className="text-gray-600">
             {mode === 'create' ? 'Create a new blog post' : 'Edit existing blog post'}
           </p>
+          {(lastSaved || isAutoSaving) && (
+            <p className="text-sm text-gray-500 mt-1">
+              {isAutoSaving ? (
+                <span className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                  Auto-saving...
+                </span>
+              ) : (
+                <span className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  Last saved: {lastSaved?.toLocaleTimeString()}
+                </span>
+              )}
+            </p>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={onCancel}>
@@ -269,17 +279,17 @@ export function PostForm({
             <Eye className="h-4 w-4 mr-2" />
             Preview
           </Button>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => handleSave('DRAFT')}
-            disabled={isSaving}
+            disabled={isSaving || isAutoSaving}
           >
             <Save className="h-4 w-4 mr-2" />
             {isSaving ? 'Saving...' : 'Save Draft'}
           </Button>
-          <Button 
+          <Button
             onClick={() => handleSave('PUBLISHED')}
-            disabled={isSaving}
+            disabled={isSaving || isAutoSaving}
           >
             <Save className="h-4 w-4 mr-2" />
             {isSaving ? 'Publishing...' : 'Publish'}
@@ -370,10 +380,11 @@ export function PostForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <RichTextEditor
+                          <CKEditorComponent
                             value={field.value}
                             onChange={field.onChange}
                             placeholder="Start writing your post..."
+                            height={400}
                           />
                         </FormControl>
                         <FormMessage />
@@ -572,14 +583,14 @@ export function PostForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Category</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value || ""} defaultValue={field.value || ""}>
+                        <Select onValueChange={(value) => field.onChange(value === "none" ? "" : value)} value={field.value || "none"} defaultValue={field.value || "none"}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select category" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="">No category</SelectItem>
+                            <SelectItem value="none">No category</SelectItem>
                             {categories.map((category) => (
                               <SelectItem key={category.id} value={category.id}>
                                 {category.name}

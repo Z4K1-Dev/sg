@@ -204,6 +204,8 @@
 - [ ] Set up post analytics (views, engagement)
 - [ ] Add real-time collaboration indicators (who is editing)
 - [ ] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
+
+### 4.5 Posts Features with Real-time Updates
 - [ ] Implement draft/published status toggle
 - [ ] Create post duplication feature
 - [ ] Implement bulk actions (delete, publish, unpublish, change category)
@@ -873,9 +875,84 @@ class ChatService {
 ---
 
 ## Guidelines
-1. Always follow **ES6 standards** (`let/const`, arrow functions, async/await, destructuring).  
-2. Use **JSDoc-style comments** for functions, classes, and modules.  
-3. Keep the **TODO list updated** because user can get Limit any time:  
+1. Always follow **ES6 standards** (`let/const`, arrow functions, async/await, destructuring).
+2. Use **JSDoc-style comments** for functions, classes, and modules.
+3. Keep the **TODO list updated** because user can get Limit any time:
   - 🔄 = for active tasks
   - ✅ = Done / when finished
   - ❌ = Failed / Error / Need to fix it
+4. Create an INDEX file for Phase [Major].[Minor] with the following details: 
+   Example:
+    ```
+    for Phase 1.2 = INDEX-1-2.md
+    for Phase 2.3 = INDEX-2-3.md
+
+    The file should include:
+    **1. List of New/Modified Files & Folders:
+    *(List all file and folder paths that were added or modified in this phase. use tree structure format) 
+    src/
+    ├── app/
+    │   ├── admin/
+    │   │   ├── posts/
+    │   │   │   └── page.tsx           # Main posts management interface
+    │   │   └── layout.tsx             # Admin layout
+    │   ├── globals.css                # Global styles
+    │   ├── layout.tsx                 # Root layout
+    │   └── page.tsx                   # Homepage
+    ├── components/
+    --- and the rest ---
+
+    **2. Component Functions & Features:**
+    *(For each important file (component, hook, API, utility), explain its function and features. Use the format below for each file.)*
+
+    **For Components:**
+    - **File:** `src/components/posts/PostCard.tsx`
+    - **Function:** Displays article preview with quick actions.
+    - **Features:**
+    - Shows title, excerpt, author, date, status.
+    - Quick edit, delete, publish actions.
+    - Responsive design with hover effects.
+    - Category and tag badges.
+
+    - **File:** `src/components/posts/PostForm.tsx`
+    - **Function:** Form for creating and editing posts.
+    - **Features:**
+    - Inputs for title, slug, content (rich text editor), and category.
+    - Client-side form validation.
+    - Real-time content preview.
+    - Handles draft and publish status.
+
+    **For API/Routes:**
+    - **File:** `src/app/api/posts/route.ts`
+    - **Function:** API endpoint for post CRUD operations.
+    - **Features:**
+    - `GET`: Fetches all posts, supports `search` and `status` queries.
+    - `POST`: Creates a new post.
+    - `PUT`: Updates a post by ID.
+    - `DELETE`: Permanently deletes a post.
+
+    **For Utilities/Hooks/Types:**
+    - **File:** `src/lib/posts.ts`
+    - **Function:** Utility functions for interacting with the posts database.
+    - **Features:**
+    - `getPosts()`: Retrieves post data from the database.
+    - `createPost()`: Saves a new post.
+    - `updatePost()`: Updates post data.
+    - `deletePost()`: Deletes a post entry.
+
+    - **File:** `src/types/post.ts`
+    - **Function:** Defines TypeScript types for posts.
+    - **Features:**
+    - Exports `Post`, `PostStatus`, `PostCategory` types.
+
+    **3. Configuration & Dependencies:**
+    *(Mention any new dependencies or other configuration changes.)*
+    - Added `react-hook-form` library for form management.
+    - Added `@tinymce/tinymce-react` for the rich text editor.
+    - Updated `prisma/schema.prisma` with the `Post` model.
+
+    **4. Other Important Notes:**
+    *(Additional notes as reminders for the future.)*
+    - Pagination implementation for the post listing page is planned for the next phase.
+    - The admin page access is not yet protected by authentication.
+    ```

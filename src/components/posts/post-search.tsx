@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -96,7 +96,6 @@ export function PostSearch({
   initialFilters = {},
 }: PostSearchProps) {
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
-  const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
   const form = useForm<AdvancedSearchData>({
     resolver: zodResolver(advancedSearchSchema) as any,
@@ -122,8 +121,8 @@ export function PostSearch({
   const { watch, setValue, reset } = form;
   const watchedValues = watch();
 
-  // Track active filters
-  useEffect(() => {
+  // Memoize the filters to prevent infinite re-renders
+  const activeFilters = useMemo(() => {
     const filters: string[] = [];
     
     if (watchedValues.query) filters.push('Query');
@@ -139,8 +138,9 @@ export function PostSearch({
     if (watchedValues.dateTo) filters.push('Date To');
     if (watchedValues.hasFeaturedImage !== undefined) filters.push('Featured Image');
     
-    setActiveFilters(filters);
+    return filters;
   }, [watchedValues]);
+
 
   const handleSearch = (data: AdvancedSearchData) => {
     onSearch?.(data);
@@ -176,7 +176,7 @@ export function PostSearch({
     setValue('tagIds', newTags);
   };
 
-  const hasActiveFilters = activeFilters.length > 0;
+  const hasActiveFilters = useMemo(() => activeFilters.length > 0, [activeFilters]);
 
   return (
     <div className="space-y-4">

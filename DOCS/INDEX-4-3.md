@@ -1,3 +1,9 @@
+### USER
+buat file INDEX.md, isi dengan informasi indexing file dan apa fungsinya, dan informasi penting lainya untuk jadi pengingat anda dimasa depan
+
+### ASSISTANT
+I'll create an INDEX.md file with comprehensive information about the project structure, file indexing, and important reminders for future development.
+
 # Blog Management System - Project Index
 
 ## 📋 Project Overview
