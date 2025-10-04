@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { protectedProcedure, router } from '../server';
+import { triggerPostCreation, triggerPostUpdate, triggerPostDeletion, triggerBulkPostAction } from '@/lib/socket/triggers';
 
 // Helper function to generate slug
 function generateSlug(title: string): string {
@@ -219,6 +220,9 @@ export const postsRouter = router({
         post
       );
 
+      // Trigger Socket.io event
+      await triggerPostCreation(post, ctx.session.user.id);
+
       return post;
     }),
 
@@ -318,6 +322,9 @@ export const postsRouter = router({
         post
       );
 
+      // Trigger Socket.io event
+      await triggerPostUpdate(post, ctx.session.user.id);
+
       return post;
     }),
 
@@ -357,6 +364,9 @@ export const postsRouter = router({
         postData,
         null
       );
+
+      // Trigger Socket.io event
+      await triggerPostDeletion(post.id, post.title, ctx.session.user.id);
 
       return { success: true };
     }),
@@ -407,9 +417,177 @@ export const postsRouter = router({
         data: updateData,
       });
 
+      // Trigger Socket.io event for bulk action
+      await triggerBulkPostAction(action, postIds, ctx.session.user.id);
+
       return {
         success: true,
         count: result.count,
       };
+    }),
+
+  // Toggle post status (draft/published)
+  toggleStatus: protectedProcedure
+    .input(z.object({
+      id: z.string(),
+      status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const { id, status } = input;
+
+      // Check if post exists
+      const existingPost = await ctx.db.post.findFirst({
+        where: {
+          id,
+          deletedAt: null,
+        },
+      });
+
+      if (!existingPost) {
+        throw new Error('Post not found');
+      }
+
+      // Store old data for logging
+      const oldPost = { ...existingPost };
+
+      // Update post status
+      const updatePayload: any = {
+        status,
+        publishedAt: status === 'PUBLISHED' && !existingPost.publishedAt
+          ? new Date()
+          : status === 'DRAFT' ? null : existingPost.publishedAt,
+      };
+
+      const post = await ctx.db.post.update({
+        where: { id },
+        data: updatePayload,
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              avatar: true,
+            },
+          },
+          category: true,
+          tags: {
+            include: {
+              tag: true,
+            },
+          },
+        },
+      });
+
+      // Log activity
+      await logActivity(
+        ctx,
+        'UPDATE',
+        'post_status_toggled',
+        `Post "${post.title}" status changed to ${status}`,
+        post.id,
+        'Post',
+        oldPost,
+        post
+      );
+
+      // Trigger Socket.io event
+      await triggerPostUpdate(post, ctx.session.user.id);
+
+      return post;
+    }),
+
+  // Duplicate post
+  duplicate: protectedProcedure
+    .input(z.object({
+      id: z.string(),
+      title: z.string().optional(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const { id, title } = input;
+
+      // Check if post exists
+      const existingPost = await ctx.db.post.findFirst({
+        where: {
+          id,
+          deletedAt: null,
+        },
+        include: {
+          tags: {
+            include: {
+              tag: true,
+            },
+          },
+        },
+      });
+
+      if (!existingPost) {
+        throw new Error('Post not found');
+      }
+
+      // Generate new title if not provided
+      const newTitle = title || `${existingPost.title} (Copy)`;
+
+      // Create duplicate post
+      const duplicateData: any = {
+        title: newTitle,
+        slug: generateSlug(newTitle),
+        content: existingPost.content,
+        excerpt: existingPost.excerpt,
+        categoryId: existingPost.categoryId,
+        status: 'DRAFT', // Always start as draft
+        metaTitle: existingPost.metaTitle,
+        metaDescription: existingPost.metaDescription,
+        featuredImage: existingPost.featuredImage,
+        authorId: ctx.session.user.id,
+        publishedAt: null, // Reset published date
+      };
+
+      const newPost = await ctx.db.post.create({
+        data: duplicateData,
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              avatar: true,
+            },
+          },
+          category: true,
+          tags: {
+            include: {
+              tag: true,
+            },
+          },
+        },
+      });
+
+      // Copy tags if they exist
+      if (existingPost.tags.length > 0) {
+        await ctx.db.postTag.createMany({
+          data: existingPost.tags.map(postTag => ({
+            postId: newPost.id,
+            tagId: postTag.tag.id,
+          })),
+        });
+      }
+
+      // Log activity
+      await logActivity(
+        ctx,
+        'CREATE',
+        'post_duplicated',
+        `Post "${newPost.title}" created from "${existingPost.title}"`,
+        newPost.id,
+        'Post',
+        null,
+        newPost
+      );
+
+      // Trigger Socket.io event
+      await triggerPostCreation(newPost, ctx.session.user.id);
+
+      return newPost;
     }),
 });

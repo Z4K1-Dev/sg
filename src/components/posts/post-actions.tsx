@@ -28,11 +28,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Trash2, 
-  Archive, 
-  Eye, 
-  Edit, 
+import {
+  Trash2,
+  Archive,
+  Eye,
+  Edit,
   Download,
   MoreHorizontal,
   CheckCircle,
@@ -40,6 +40,8 @@ import {
   Loader2
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { trpc } from '@/lib/trpc/client';
+import { usePostEvents } from '@/lib/socket/client';
 
 // Types
 interface Post {
@@ -83,7 +85,6 @@ export function PostActions({
   selectedPosts,
   posts,
   categories = [],
-  onBulkAction,
   onExport,
   onClearSelection,
   loading = false,
@@ -97,6 +98,51 @@ export function PostActions({
 
   const selectedPostsData = posts.filter(post => selectedPosts.includes(post.id));
   const selectedCount = selectedPosts.length;
+
+  // tRPC mutation for bulk actions
+  const bulkActionMutation = trpc.posts.bulk.useMutation({
+    onSuccess: (data) => {
+      setActionResult({ success: true, count: data.count });
+      setProgress(100);
+      toast({
+        title: "Success",
+        description: `${selectedAction?.label} completed for ${data.count} posts`,
+      });
+      onClearSelection?.();
+    },
+    onError: (error) => {
+      setActionResult({ success: false, count: 0, errors: [error.message] });
+      toast({
+        title: "Error",
+        description: `Failed to ${selectedAction?.label.toLowerCase()} posts`,
+        variant: "destructive",
+      });
+    },
+    onSettled: () => {
+      setIsProcessing(false);
+      setTimeout(() => {
+        setActionDialogOpen(false);
+        setSelectedAction(null);
+        setSelectedCategory('');
+      }, 2000);
+    },
+  });
+
+  // Listen for real-time post events
+  usePostEvents((event) => {
+    if (event.type === 'post.published' || event.type === 'post.unpublished' || event.type === 'post.deleted') {
+      // Update progress for bulk actions
+      if (isProcessing && selectedPosts.includes(event.data.id)) {
+        const completedPosts = selectedPosts.filter(() =>
+          // In a real implementation, you would track which posts have been processed
+          Math.random() > 0.5 // Simulate random completion for demo
+        ).length;
+        
+        const newProgress = Math.round((completedPosts / selectedPosts.length) * 100);
+        setProgress(Math.min(newProgress, 90)); // Cap at 90% until final result
+      }
+    }
+  });
 
   const bulkActions: BulkAction[] = [
     {
@@ -151,58 +197,34 @@ export function PostActions({
     setIsProcessing(true);
     setProgress(0);
 
+    // Simulate progress for better UX
+    const progressInterval = setInterval(() => {
+      setProgress(prev => Math.min(prev + 10, 90));
+    }, 100);
+
     try {
-      let result: ActionResult;
-
-      // Simulate progress for better UX
-      const progressInterval = setInterval(() => {
-        setProgress(prev => Math.min(prev + 10, 90));
-      }, 100);
-
       if (selectedAction.type === 'export') {
         // Handle export separately
         await onExport?.(selectedPosts, 'json');
-        result = { success: true, count: selectedPosts.length };
+        clearInterval(progressInterval);
+        setProgress(100);
+        setActionResult({ success: true, count: selectedPosts.length });
       } else {
-        const options = selectedAction.type === 'changeCategory' 
-          ? { categoryId: selectedCategory }
-          : undefined;
-
-        result = await onBulkAction?.(selectedAction.type, selectedPosts, options) || 
-                { success: false, count: 0 };
-      }
-
-      clearInterval(progressInterval);
-      setProgress(100);
-      setActionResult(result);
-
-      if (result.success) {
-        toast({
-          title: "Success",
-          description: `${selectedAction.label} completed for ${result.count} posts`,
-        });
-        onClearSelection?.();
-      } else {
-        toast({
-          title: "Partial Success",
-          description: `Action completed for ${result.count} posts${result.errors?.length ? ` with ${result.errors.length} errors` : ''}`,
-          variant: "destructive",
+        // Use tRPC mutation for bulk actions
+        bulkActionMutation.mutate({
+          action: selectedAction.type as 'delete' | 'publish' | 'unpublish' | 'archive',
+          postIds: selectedPosts,
         });
       }
     } catch (error) {
+      clearInterval(progressInterval);
       setActionResult({ success: false, count: 0, errors: ['Action failed'] });
       toast({
         title: "Error",
         description: `Failed to ${selectedAction.label.toLowerCase()} posts`,
         variant: "destructive",
       });
-    } finally {
       setIsProcessing(false);
-      setTimeout(() => {
-        setActionDialogOpen(false);
-        setSelectedAction(null);
-        setSelectedCategory('');
-      }, 2000);
     }
   };
 

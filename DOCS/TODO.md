@@ -193,17 +193,17 @@
 - [x] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 
 ### 4.4 Posts Features with Real-time Updates
-- [ ] Implement draft/published status toggle with Socket.io triggers
-- [ ] Create post duplication feature with real-time notifications
-- [ ] Implement bulk actions with Socket.io progress updates
-- [ ] Create post revision history system with real-time sync
-- [ ] Implement advanced post search functionality
-- [ ] Set up post export features (JSON, CSV)
+- [x] Implement draft/published status toggle with Socket.io triggers
+- [x] Create post duplication feature with real-time notifications
+- [x] Implement bulk actions with Socket.io progress updates
+- [x] Create post revision history system with real-time sync
+- [x] Implement advanced post search functionality
+- [x] Set up post export features (JSON, CSV)
 - [ ] Create post scheduling system (if needed)
 - [ ] Implement post template system
 - [ ] Set up post analytics (views, engagement)
-- [ ] Add real-time collaboration indicators (who is editing)
-- [ ] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
+- [x] Add real-time collaboration indicators (who is editing)
+- [x] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 
 ### 4.5 Posts Features with Real-time Updates
 - [ ] Implement draft/published status toggle

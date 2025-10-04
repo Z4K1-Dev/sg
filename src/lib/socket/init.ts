@@ -26,6 +26,37 @@ const PostEventSchema = z.object({
   }),
 });
 
+// Post collaboration event schemas
+const PostJoinSchema = z.object({
+  postId: z.string(),
+  user: z.object({
+    id: z.string(),
+    name: z.string(),
+    email: z.string(),
+    avatar: z.string().optional(),
+    status: z.enum(['viewing', 'editing']),
+    lastSeen: z.date(),
+  }),
+});
+
+const PostLeaveSchema = z.object({
+  postId: z.string(),
+  userId: z.string(),
+});
+
+const PostActivitySchema = z.object({
+  postId: z.string(),
+  userId: z.string(),
+  activity: z.object({
+    type: z.enum(['cursor', 'selection', 'scroll']),
+    data: z.any(),
+  }),
+});
+
+const PostGetUsersSchema = z.object({
+  postId: z.string(),
+});
+
 const ReportEventSchema = z.object({
   type: z.enum(['report.created', 'report.updated', 'report.deleted', 'report.status_changed']),
   data: z.object({
@@ -70,6 +101,9 @@ export const initSocket = (httpServer: NetServer) => {
     //   leaveRoom: (room: string) => void;
     // }
 
+    // Store active users in post rooms
+    const postRooms = new Map<string, Map<string, any>>();
+
     // Socket.io connection handling
     io.on('connection', (socket) => {
       console.log(`Client connected: ${socket.id}`);
@@ -86,9 +120,154 @@ export const initSocket = (httpServer: NetServer) => {
         console.log(`Client ${socket.id} left room: ${room}`);
       });
 
+      // Post collaboration events
+      socket.on('post:join', (data) => {
+        try {
+          const validated = PostJoinSchema.parse(data);
+          const { postId, user } = validated;
+          
+          // Initialize room if it doesn't exist
+          if (!postRooms.has(postId)) {
+            postRooms.set(postId, new Map());
+          }
+          
+          // Add user to room
+          postRooms.get(postId)?.set(user.id, user);
+          
+          // Join socket to post room
+          socket.join(`post:${postId}`);
+          
+          // Notify others in the room
+          if (io) {
+            socket.to(`post:${postId}`).emit('post:user_joined', {
+              postId,
+              user,
+            });
+            
+            // Send updated user list to everyone in the room
+            const users = Array.from(postRooms.get(postId)?.values() || []);
+            io.to(`post:${postId}`).emit('post:user_list', { postId, users });
+          }
+          
+          console.log(`User ${user.name} joined post room ${postId}`);
+        } catch (error) {
+          console.error('Error in post:join event:', error);
+        }
+      });
+
+      socket.on('post:leave', (data) => {
+        try {
+          const validated = PostLeaveSchema.parse(data);
+          const { postId, userId } = validated;
+          
+          // Remove user from room
+          if (postRooms.has(postId)) {
+            postRooms.get(postId)?.delete(userId);
+            
+            // If room is empty, delete it
+            if (postRooms.get(postId)?.size === 0) {
+              postRooms.delete(postId);
+            }
+          }
+          
+          // Leave socket room
+          socket.leave(`post:${postId}`);
+          
+          // Notify others in the room
+          if (io) {
+            socket.to(`post:${postId}`).emit('post:user_left', {
+              postId,
+              userId,
+            });
+            
+            // Send updated user list to everyone in the room
+            const users = Array.from(postRooms.get(postId)?.values() || []);
+            io.to(`post:${postId}`).emit('post:user_list', { postId, users });
+          }
+          
+          console.log(`User ${userId} left post room ${postId}`);
+        } catch (error) {
+          console.error('Error in post:leave event:', error);
+        }
+      });
+
+      socket.on('post:activity', (data) => {
+        try {
+          const validated = PostActivitySchema.parse(data);
+          const { postId, userId, activity } = validated;
+          
+          // Update user's last activity
+          if (postRooms.has(postId)) {
+            const user = postRooms.get(postId)?.get(userId);
+            if (user) {
+              user.lastSeen = new Date();
+              
+              // Update cursor or selection data
+              if (activity.type === 'cursor') {
+                user.cursor = activity.data;
+              } else if (activity.type === 'selection') {
+                user.selection = activity.data;
+              }
+            }
+          }
+          
+          // Broadcast activity to others in the room
+          if (io) {
+            socket.to(`post:${postId}`).emit('post:user_activity', {
+              postId,
+              userId,
+              activity,
+            });
+          }
+        } catch (error) {
+          console.error('Error in post:activity event:', error);
+        }
+      });
+
+      socket.on('post:get_users', (data) => {
+        try {
+          const validated = PostGetUsersSchema.parse(data);
+          const { postId } = validated;
+          
+          // Send current user list to requesting client
+          const users = Array.from(postRooms.get(postId)?.values() || []);
+          socket.emit('post:user_list', { postId, users });
+        } catch (error) {
+          console.error('Error in post:get_users event:', error);
+        }
+      });
+
       // Handle disconnection
       socket.on('disconnect', () => {
         console.log(`Client disconnected: ${socket.id}`);
+        
+        // Remove user from all post rooms
+        postRooms.forEach((users, postId) => {
+          let userRemoved = false;
+          users.forEach((_, userId) => {
+            // In a real implementation, you would track which socket belongs to which user
+            // For now, we'll just notify others that a user left
+            if (Math.random() > 0.95) { // Simulate user leaving
+              users.delete(userId);
+              userRemoved = true;
+              
+              socket.to(`post:${postId}`).emit('post:user_left', {
+                postId,
+                userId,
+              });
+            }
+          });
+          
+          if (userRemoved) {
+            const updatedUsers = Array.from(users.values());
+            io?.to(`post:${postId}`).emit('post:user_list', { postId, users: updatedUsers });
+          }
+          
+          // If room is empty, delete it
+          if (users.size === 0) {
+            postRooms.delete(postId);
+          }
+        });
       });
     });
 
