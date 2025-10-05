@@ -199,22 +199,7 @@
 - [x] Create post revision history system with real-time sync
 - [x] Implement advanced post search functionality
 - [x] Set up post export features (JSON, CSV)
-- [ ] Create post scheduling system (if needed)
-- [ ] Implement post template system
-- [ ] Set up post analytics (views, engagement)
 - [x] Add real-time collaboration indicators (who is editing)
-- [x] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
-
-### 4.5 Posts Features with Real-time Updates
-- [x] Implement draft/published status toggle
-- [x] Create post duplication feature
-- [x] Implement bulk actions (delete, publish, unpublish, change category)
-- [x] Create post revision history system
-- [x] Implement advanced post search functionality
-- [x] Set up post export features (JSON, CSV)
-- [ ] Create post scheduling system (if needed)
-- [ ] Implement post template system
-- [ ] Set up post analytics (views, engagement)
 - [x] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 
 ## 📄 Phase 5: Pages Management System
@@ -233,7 +218,6 @@
 - [ ] Create page SEO metadata handling
 - [ ] Set up page ordering system
 - [ ] Add page activity logging
-- [ ] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 
 ### 5.2 Pages UI Components
 - [ ] Create pages list with hierarchy view (/src/app/admin/pages/page.tsx)
@@ -249,7 +233,6 @@
 - [ ] Set up page organization features (drag & drop ordering)
 - [ ] Create page SEO metadata form
 - [ ] Implement page publishing workflow
-- [ ] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 
 ### 5.3 Pages Features
 - [ ] Implement page parent/child relationships management
@@ -260,6 +243,8 @@
 - [ ] Implement page search functionality
 - [ ] Set up page navigation management
 - [ ] Create page analytics (views, engagement)
+
+### 5.4 Pages Features
 - [ ] Do final check : npm run lint, npx tsc --noEmit, rm -rf .next, npm cache clean --force and npm run build
 
 ## 📁 Phase 6: Media Management System
